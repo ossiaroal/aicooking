@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Cook 厨房AI助手 - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border-radius: 50px;
+            font-size: 1.2em;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            width: calc(50% - 20px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: #4ECDC4;
+        }
+        
+        @media (max-width: 768px) {
+            .feature {
+                width: 100%;
+            }
+        }
+        
+        footer {
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🍳</div>
+        <h1>V-Cook 厨房AI助手</h1>
+        <p>您的智能烹饪伙伴，通过语音交互提供菜谱查询、烹饪指导、定时提醒和厨房安全建议</p>
+        
+        <a href="v-cook-assistant.html" class="btn">立即体验</a>
+        <a href="https://github.com/YOUR_USERNAME/v-cook-assistant" class="btn">GitHub 项目</a>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🎤 语音交互</h3>
+                <p>通过自然语言与助手交流，无需记忆特定命令</p>
+            </div>
+            <div class="feature">
+                <h3>🍲 智能菜谱</h3>
+                <p>查询菜谱、获取烹饪步骤和技巧，支持AI增强推荐</p>
+            </div>
+            <div class="feature">
+                <h3>⏲️ 智能定时</h3>
+                <p>语音设置定时器，多任务同时进行不再手忙脚乱</p>
+            </div>
+            <div class="feature">
+                <h3>🛡️ 厨房安全</h3>
+                <p>提供厨房安全知识和紧急情况处理建议</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 V-Cook 厨房AI助手 | <a href="github-deployment-guide.md">部署指南</a> | <a href="LICENSE">MIT 许可证</a></p>
+        </footer>
+    </div>
+</body>
+</html>

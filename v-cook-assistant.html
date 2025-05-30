@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Cook 厨房AI助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .function-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .function-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .function-card.recipe {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+        
+        .function-card.timer {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+        
+        .function-card.safety {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+        }
+        
+        .function-card.voice {
+            background: linear-gradient(135deg, #a8caba 0%, #5d4e75 100%);
+            color: white;
+        }
+        
+        .function-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .function-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .function-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .voice-control {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .voice-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto 15px;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .voice-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .voice-button.listening {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            animation: pulse 1s infinite;
+        }
+        
+        .voice-status {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .voice-text {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 50px;
+            border: 2px dashed #ddd;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .response-area {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .timer-display {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .timer-time {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .recipe-search {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .recipe-results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .recipe-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .recipe-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .safety-tips {
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .safety-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #FF6B6B;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .ai-config-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            display: none;
+            border: 2px solid #667eea;
+        }
+        
+        .ai-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .ai-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .ai-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .config-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .config-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">👨‍🍳</div>
+            <h1>V-Cook</h1>
+            <p>您的贴心厨房AI助手</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- 功能卡片 -->
+            <div class="function-grid">
+                <div class="function-card recipe" onclick="toggleRecipe()">
+                    <span class="function-icon">📖</span>
+                    <div class="function-title">菜谱查询</div>
+                    <div class="function-desc">搜索美味菜谱</div>
+                </div>
+                
+                <div class="function-card timer" onclick="toggleTimer()">
+                    <span class="function-icon">⏰</span>
+                    <div class="function-title">厨房定时</div>
+                    <div class="function-desc">设置烹饪计时</div>
+                </div>
+                
+                <div class="function-card safety" onclick="toggleSafety()">
+                    <span class="function-icon">🛡️</span>
+                    <div class="function-title">安全提醒</div>
+                    <div class="function-desc">厨房安全贴士</div>
+                </div>
+                
+                <div class="function-card voice" onclick="toggleVoice()">
+                    <span class="function-icon">🎤</span>
+                    <div class="function-title">语音助手</div>
+                    <div class="function-desc">语音交互控制</div>
+                </div>
+            </div>
+            
+            <!-- AI配置面板 -->
+            <div class="ai-config-panel" id="aiConfigPanel">
+                <h3>🤖 AI助手配置</h3>
+                <div class="ai-status" id="aiStatus">
+                    <span>AI状态：未配置</span>
+                    <button class="btn btn-secondary" onclick="toggleAIConfig()">配置</button>
+                </div>
+                
+                <div id="aiConfigForm" style="display: none;">
+                    <label class="config-label">API提供商：</label>
+                    <select class="config-input" id="aiProvider">
+                        <option value="openai">OpenAI (GPT)</option>
+                        <option value="claude">Anthropic (Claude)</option>
+                        <option value="gemini">Google (Gemini)</option>
+                        <option value="local">本地模型</option>
+                    </select>
+                    
+                    <label class="config-label">API密钥：</label>
+                    <input type="password" class="config-input" id="aiApiKey" placeholder="输入您的API密钥">
+                    
+                    <label class="config-label">API地址：</label>
+                    <input type="text" class="config-input" id="aiBaseUrl" placeholder="API基础URL">
+                    
+                    <label class="config-label">模型名称：</label>
+                    <input type="text" class="config-input" id="aiModel" placeholder="模型名称">
+                    
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="saveAIConfig()">保存配置</button>
+                        <button class="btn btn-secondary" onclick="testAIConnection()">测试连接</button>
+                        <button class="btn btn-secondary" onclick="clearAIConfig()">清除配置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 语音控制区域 -->
+            <div class="voice-control">
+                <button class="voice-button" id="voiceBtn" onclick="toggleVoiceRecognition()">
+                    🎤
+                </button>
+                <div class="voice-status" id="voiceStatus">点击麦克风开始语音交互</div>
+                <div class="voice-text" id="voiceText">您说的话会显示在这里...</div>
+            </div>
+            
+            <!-- 响应区域 -->
+            <div class="response-area" id="responseArea">
+                <div>👋 您好！我是V-Cook，您的贴心厨房助手。<br>您可以问我菜谱、设置定时器，或者询问厨房安全知识。</div>
+            </div>
+            
+            <!-- 定时器 -->
+            <div class="timer-display" id="timerDisplay">
+                <div class="timer-time" id="timerTime">00:00</div>
+                <div>厨房定时器</div>
+                <div class="timer-controls">
+                    <button class="btn btn-secondary" onclick="pauseTimer()">暂停</button>
+                    <button class="btn btn-secondary" onclick="resetTimer()">重置</button>
+                </div>
+            </div>
+            
+            <!-- 菜谱搜索 -->
+            <div class="recipe-search" id="recipeSearch">
+                <input type="text" class="search-input" placeholder="搜索菜谱..." id="recipeInput" onkeyup="searchRecipes()">
+                <div class="recipe-results" id="recipeResults">
+                    <div class="recipe-item" onclick="showRecipe('西红柿炒蛋')">
+                        <strong>西红柿炒蛋</strong><br>
+                        <small>经典家常菜，简单易做</small>
+                    </div>
+                    <div class="recipe-item" onclick="showRecipe('红烧肉')">
+                        <strong>红烧肉</strong><br>
+                        <small>香甜软糯，老少皆宜</small>
+                    </div>
+                    <div class="recipe-item" onclick="showRecipe('宫保鸡丁')">
+                        <strong>宫保鸡丁</strong><br>
+                        <small>川菜经典，酸甜微辣</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 安全提醒 -->
+            <div class="safety-tips" id="safetyTips">
+                <div class="safety-item">
+                    <strong>🔥 用火安全</strong><br>
+                    使用燃气灶时请确保通风良好，离开厨房前务必关闭火源
+                </div>
+                <div class="safety-item">
+                    <strong>🔪 刀具安全</strong><br>
+                    使用刀具时注意手指位置，切菜时保持刀具锋利和稳定
+                </div>
+                <div class="safety-item">
+                    <strong>🧽 清洁卫生</strong><br>
+                    生熟食品分开处理，及时清洗餐具和工作台面
+                </div>
+                <div class="safety-item">
+                    <strong>⚡ 电器安全</strong><br>
+                    使用电器前检查电线是否完好，湿手不要触碰电器开关
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        class VCookAssistant {
+            constructor() {
+                this.isListening = false;
+                this.recognition = null;
+                this.timerInterval = null;
+                this.timerSeconds = 0;
+                this.timerRunning = false;
+                
+                // AI模型配置
+                this.aiConfig = {
+                    // 可以配置不同的AI服务
+                    provider: 'openai', // 'openai', 'claude', 'gemini', 'local'
+                    apiKey: '', // 需要用户配置
+                    baseUrl: 'https://api.openai.com/v1', // API基础URL
+                    model: 'gpt-3.5-turbo' // 使用的模型
+                };
+                
+                this.initSpeechRecognition();
+                this.initSpeechSynthesis();
+                this.initAIConfig();
+            }
+            
+            initAIConfig() {
+                // 从localStorage读取AI配置
+                const savedConfig = localStorage.getItem('vcook-ai-config');
+                if (savedConfig) {
+                    this.aiConfig = { ...this.aiConfig, ...JSON.parse(savedConfig) };
+                }
+                
+                // 如果没有API密钥，提示用户配置
+                if (!this.aiConfig.apiKey) {
+                    this.showAIConfigPrompt();
+                }
+            }
+            
+            showAIConfigPrompt() {
+                const apiKey = prompt('请输入您的AI API密钥（OpenAI/Claude等）\n\n注意：密钥将保存在本地浏览器中，请确保设备安全。\n\n如果暂时不配置，将使用内置的基础功能。');
+                if (apiKey && apiKey.trim()) {
+                    this.aiConfig.apiKey = apiKey.trim();
+                    localStorage.setItem('vcook-ai-config', JSON.stringify(this.aiConfig));
+                    this.speak('AI功能已启用，现在可以为您提供更智能的菜谱推荐和语音理解服务！');
+                }
+            }
+            
+            initSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                    this.recognition.lang = 'zh-CN';
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    
+                    this.recognition.onstart = () => {
+                        this.isListening = true;
+                        document.getElementById('voiceBtn').classList.add('listening');
+                        document.getElementById('voiceStatus').textContent = '正在聆听...';
+                    };
+                    
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('voiceText').textContent = transcript;
+                        this.processVoiceCommand(transcript);
+                    };
+                    
+                    this.recognition.onend = () => {
+                        this.isListening = false;
+                        document.getElementById('voiceBtn').classList.remove('listening');
+                        document.getElementById('voiceStatus').textContent = '点击麦克风开始语音交互';
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error('语音识别错误:', event.error);
+                        this.speak('抱歉，我没有听清楚，请再说一遍');
+                    };
+                }
+            }
+            
+            initSpeechSynthesis() {
+                // 语音合成初始化
+                if ('speechSynthesis' in window) {
+                    // 等待语音列表加载
+                    speechSynthesis.getVoices();
+                }
+            }
+            
+            toggleVoiceRecognition() {
+                if (this.isListening) {
+                    this.recognition.stop();
+                } else {
+                    if (this.recognition) {
+                        this.recognition.start();
+                    } else {
+                        this.speak('抱歉，您的浏览器不支持语音识别功能');
+                    }
+                }
+            }
+            
+            async processVoiceCommand(command) {
+                const cmd = command.toLowerCase();
+                
+                // 如果配置了AI，使用AI进行智能理解
+                if (this.aiConfig.apiKey) {
+                    await this.handleAICommand(command);
+                } else {
+                    // 使用基础的关键词匹配
+                    if (cmd.includes('菜谱') || cmd.includes('做菜') || cmd.includes('怎么做')) {
+                        this.handleRecipeQuery(command);
+                    } else if (cmd.includes('定时') || cmd.includes('计时') || cmd.includes('提醒')) {
+                        this.handleTimerCommand(command);
+                    } else if (cmd.includes('安全') || cmd.includes('注意') || cmd.includes('小心')) {
+                        this.handleSafetyQuery();
+                    } else if (cmd.includes('你好') || cmd.includes('帮助')) {
+                        this.handleGreeting();
+                    } else {
+                        this.handleGeneralQuery(command);
+                    }
+                }
+            }
+            
+            async handleAICommand(command) {
+                try {
+                    this.updateResponse('🤖 正在思考中...');
+                    
+                    const response = await this.callAI(command);
+                    this.updateResponse(response);
+                    this.speak(response);
+                    
+                    // 根据AI响应执行相应操作
+                    this.executeAIResponse(response, command);
+                } catch (error) {
+                    console.error('AI调用失败:', error);
+                    this.updateResponse('抱歉，AI服务暂时不可用，为您切换到基础功能模式。');
+                    this.speak('AI服务暂时不可用，为您切换到基础功能');
+                    
+                    // 降级到基础功能
+                    const cmd = command.toLowerCase();
+                    if (cmd.includes('菜谱') || cmd.includes('做菜') || cmd.includes('怎么做')) {
+                        this.handleRecipeQuery(command);
+                    } else if (cmd.includes('定时') || cmd.includes('计时') || cmd.includes('提醒')) {
+                        this.handleTimerCommand(command);
+                    } else {
+                        this.handleGeneralQuery(command);
+                    }
+                }
+            }
+            
+            async callAI(userMessage) {
+                const systemPrompt = `你是V-Cook，一个贴心的厨房AI助手。你的职责是：
+1. 提供详细的菜谱和烹饪指导
+2. 帮助用户设置厨房定时器
+3. 提供厨房安全建议
+4. 回答烹饪相关问题
+
+请用温和、专业的语调回答，保持简洁但有用。如果用户询问菜谱，请提供具体的食材和步骤。如果用户要设置定时器，请识别时间并确认。
+
+当前用户说："${userMessage}"
+
+请分析用户意图并给出合适的回应。如果是菜谱查询，请提供详细做法。如果是定时需求，请确认时间。`;
+                
+                const requestBody = {
+                    model: this.aiConfig.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: systemPrompt
+                        },
+                        {
+                            role: 'user',
+                            content: userMessage
+                        }
+                    ],
+                    max_tokens: 500,
+                    temperature: 0.7
+                };
+                
+                const response = await fetch(`${this.aiConfig.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.aiConfig.apiKey}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+            }
+            
+            executeAIResponse(response, originalCommand) {
+                // 检查AI响应中是否包含定时器设置
+                const timerMatch = response.match(/(\d+)分钟|(\d+)秒/);
+                if (timerMatch && originalCommand.includes('定时')) {
+                    let seconds = 0;
+                    if (timerMatch[1]) {
+                        seconds = parseInt(timerMatch[1]) * 60;
+                    } else if (timerMatch[2]) {
+                        seconds = parseInt(timerMatch[2]);
+                    }
+                    if (seconds > 0) {
+                        this.startTimer(seconds);
+                    }
+                }
+                
+                // 检查是否是菜谱查询，显示菜谱搜索面板
+                if (originalCommand.includes('菜谱') || originalCommand.includes('做菜') || originalCommand.includes('怎么做')) {
+                    document.getElementById('recipeSearch').style.display = 'block';
+                }
+                
+                // 检查是否是安全查询，显示安全提醒
+                if (originalCommand.includes('安全') || response.includes('安全')) {
+                    document.getElementById('safetyTips').style.display = 'block';
+                }
+            }
+            
+            handleRecipeQuery(command) {
+                let response = '';
+                
+                if (command.includes('西红柿炒蛋')) {
+                    response = '西红柿炒蛋的做法：先将鸡蛋打散炒熟盛起，再炒西红柿出汁，最后倒入鸡蛋翻炒即可。记得先放糖再放盐哦！';
+                } else if (command.includes('红烧肉')) {
+                    response = '红烧肉需要五花肉、冰糖、生抽、老抽。先焯水，再炒糖色，小火慢炖一小时。记得中途翻面，最后大火收汁。';
+                } else {
+                    response = '我为您推荐几道家常菜：西红柿炒蛋、红烧肉、宫保鸡丁。您想了解哪道菜的具体做法呢？';
+                }
+                
+                this.updateResponse(response);
+                this.speak(response);
+                document.getElementById('recipeSearch').style.display = 'block';
+            }
+            
+            handleTimerCommand(command) {
+                const timeMatch = command.match(/(\d+)分钟?|(\d+)秒/);
+                
+                if (timeMatch) {
+                    let seconds = 0;
+                    if (timeMatch[1]) {
+                        seconds = parseInt(timeMatch[1]) * 60;
+                    } else if (timeMatch[2]) {
+                        seconds = parseInt(timeMatch[2]);
+                    }
+                    
+                    this.startTimer(seconds);
+                    const response = `好的，我为您设置了${Math.floor(seconds/60)}分钟${seconds%60}秒的定时器`;
+                    this.updateResponse(response);
+                    this.speak(response);
+                } else {
+                    const response = '请告诉我需要定时多长时间，比如"定时5分钟"';
+                    this.updateResponse(response);
+                    this.speak(response);
+                }
+            }
+            
+            handleSafetyQuery() {
+                const response = '厨房安全很重要！请注意用火安全、刀具使用、保持清洁卫生，还要注意电器安全。我已为您显示详细的安全提醒。';
+                this.updateResponse(response);
+                this.speak(response);
+                document.getElementById('safetyTips').style.display = 'block';
+            }
+            
+            handleGreeting() {
+                const responses = [
+                    '您好！我是V-Cook，很高兴为您服务。今天想做什么美食呢？',
+                    '欢迎使用V-Cook厨房助手！我可以帮您查菜谱、设定时器、提醒安全事项。',
+                    '您好！作为您的厨房伙伴，我随时准备为您提供烹饪帮助。'
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                this.updateResponse(response);
+                this.speak(response);
+            }
+            
+            handleGeneralQuery(command) {
+                const response = '我是您的厨房助手V-Cook。您可以问我菜谱做法、设置定时器，或者了解厨房安全知识。还有什么我可以帮您的吗？';
+                this.updateResponse(response);
+                this.speak(response);
+            }
+            
+            updateResponse(text) {
+                document.getElementById('responseArea').innerHTML = `<div>🤖 ${text}</div>`;
+            }
+            
+            speak(text) {
+                if ('speechSynthesis' in window) {
+                    // 停止当前播放
+                    speechSynthesis.cancel();
+                    
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.1;
+                    utterance.volume = 0.9;
+                    
+                    // 选择合适的语音
+                    const voices = speechSynthesis.getVoices();
+                    const preferredVoices = voices.filter(voice => 
+                        voice.lang.includes('zh') && 
+                        (voice.name.includes('女') || voice.name.includes('Female'))
+                    );
+                    
+                    if (preferredVoices.length > 0) {
+                        utterance.voice = preferredVoices[0];
+                    }
+                    
+                    speechSynthesis.speak(utterance);
+                }
+            }
+            
+            startTimer(seconds) {
+                this.timerSeconds = seconds;
+                this.timerRunning = true;
+                document.getElementById('timerDisplay').style.display = 'block';
+                
+                this.timerInterval = setInterval(() => {
+                    if (this.timerRunning && this.timerSeconds > 0) {
+                        this.timerSeconds--;
+                        this.updateTimerDisplay();
+                        
+                        if (this.timerSeconds === 0) {
+                            this.timerComplete();
+                        }
+                    }
+                }, 1000);
+                
+                this.updateTimerDisplay();
+            }
+            
+            updateTimerDisplay() {
+                const minutes = Math.floor(this.timerSeconds / 60);
+                const seconds = this.timerSeconds % 60;
+                document.getElementById('timerTime').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            timerComplete() {
+                this.timerRunning = false;
+                clearInterval(this.timerInterval);
+                this.speak('时间到了！请注意查看您的菜品。');
+                this.updateResponse('⏰ 定时器时间到了！请及时处理您的菜品。');
+                
+                // 闪烁提醒
+                const timerDisplay = document.getElementById('timerDisplay');
+                timerDisplay.style.animation = 'pulse 0.5s infinite';
+                
+                setTimeout(() => {
+                    timerDisplay.style.animation = '';
+                }, 5000);
+            }
+            
+            pauseTimer() {
+                this.timerRunning = !this.timerRunning;
+                const btn = event.target;
+                btn.textContent = this.timerRunning ? '暂停' : '继续';
+            }
+            
+            resetTimer() {
+                this.timerRunning = false;
+                this.timerSeconds = 0;
+                clearInterval(this.timerInterval);
+                document.getElementById('timerDisplay').style.display = 'none';
+            }
+            
+            async searchRecipesWithAI(query) {
+                const systemPrompt = `你是一个专业的厨师助手。用户搜索菜谱关键词："${query}"。
+                
+请为用户推荐3-5个相关的菜谱，每个菜谱包含：
+1. 菜名
+2. 简短描述（一句话）
+3. 主要特点
+
+请以JSON格式返回，格式如下：
+[
+  {"name": "菜名", "desc": "简短描述", "difficulty": "难度等级"},
+  ...
+]
+
+只返回JSON数据，不要其他文字。`;
+                
+                const requestBody = {
+                    model: this.aiConfig.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: systemPrompt
+                        }
+                    ],
+                    max_tokens: 400,
+                    temperature: 0.7
+                };
+                
+                const response = await fetch(`${this.aiConfig.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.aiConfig.apiKey}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content.trim();
+                
+                try {
+                    // 尝试解析JSON
+                    const recipes = JSON.parse(aiResponse);
+                    return recipes.map(recipe => 
+                        `<div class="recipe-item" onclick="showRecipe('${recipe.name}', true)">
+                            <strong>${recipe.name}</strong><br>
+                            <small>${recipe.desc} - ${recipe.difficulty || '中等难度'}</small>
+                        </div>`
+                    ).join('');
+                } catch (parseError) {
+                    // 如果JSON解析失败，返回文本格式
+                    return `<div class="recipe-item">
+                        <strong>AI推荐</strong><br>
+                        <small>${aiResponse}</small>
+                    </div>`;
+                }
+            }
+            
+            async getRecipeDetailsWithAI(recipeName) {
+                const systemPrompt = `请提供"${recipeName}"这道菜的详细做法，包括：
+1. 所需食材（具体用量）
+2. 制作步骤（详细步骤）
+3. 烹饪技巧和注意事项
+
+请用简洁明了的中文回答，适合家庭制作。`;
+                
+                const requestBody = {
+                    model: this.aiConfig.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: systemPrompt
+                        }
+                    ],
+                    max_tokens: 600,
+                    temperature: 0.7
+                };
+                
+                const response = await fetch(`${this.aiConfig.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.aiConfig.apiKey}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+            }
+        }
+        
+        // 全局变量
+        let vCook;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            vCook = new VCookAssistant();
+        });
+        
+        // 全局函数
+        function toggleVoiceRecognition() {
+            vCook.toggleVoiceRecognition();
+        }
+        
+        function toggleRecipe() {
+            const recipeSearch = document.getElementById('recipeSearch');
+            const isVisible = recipeSearch.style.display === 'block';
+            
+            // 隐藏其他面板
+            document.getElementById('safetyTips').style.display = 'none';
+            
+            recipeSearch.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                vCook.updateResponse('📖 菜谱查询已打开，您可以搜索或浏览推荐菜谱。');
+                vCook.speak('菜谱查询已打开');
+            }
+        }
+        
+        function toggleTimer() {
+            vCook.updateResponse('⏰ 请通过语音告诉我需要定时多长时间，比如说"定时5分钟"。');
+            vCook.speak('请告诉我需要定时多长时间');
+        }
+        
+        function toggleSafety() {
+            const safetyTips = document.getElementById('safetyTips');
+            const isVisible = safetyTips.style.display === 'block';
+            
+            // 隐藏其他面板
+            document.getElementById('recipeSearch').style.display = 'none';
+            
+            safetyTips.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                vCook.updateResponse('🛡️ 厨房安全提醒已显示，请注意这些重要的安全事项。');
+                vCook.speak('请注意厨房安全事项');
+            }
+        }
+        
+        function toggleVoice() {
+            vCook.updateResponse('🎤 语音助手已激活，点击麦克风按钮开始语音交互。');
+            vCook.speak('请点击麦克风开始语音交互');
+        }
+        
+        async function searchRecipes() {
+            const query = document.getElementById('recipeInput').value.toLowerCase();
+            const results = document.getElementById('recipeResults');
+            
+            if (query.length === 0) {
+                results.innerHTML = `
+                    <div class="recipe-item" onclick="showRecipe('西红柿炒蛋')">
+                        <strong>西红柿炒蛋</strong><br>
+                        <small>经典家常菜，简单易做</small>
+                    </div>
+                    <div class="recipe-item" onclick="showRecipe('红烧肉')">
+                        <strong>红烧肉</strong><br>
+                        <small>香甜软糯，老少皆宜</small>
+                    </div>
+                    <div class="recipe-item" onclick="showRecipe('宫保鸡丁')">
+                        <strong>宫保鸡丁</strong><br>
+                        <small>川菜经典，酸甜微辣</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 如果配置了AI，使用AI搜索菜谱
+            if (vCook.aiConfig.apiKey) {
+                try {
+                    results.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">🤖 AI正在为您搜索菜谱...</div>';
+                    
+                    const aiRecipes = await vCook.searchRecipesWithAI(query);
+                    results.innerHTML = aiRecipes;
+                } catch (error) {
+                    console.error('AI菜谱搜索失败:', error);
+                    // 降级到基础搜索
+                    basicRecipeSearch(query, results);
+                }
+            } else {
+                // 使用基础搜索
+                basicRecipeSearch(query, results);
+            }
+        }
+        
+        function basicRecipeSearch(query, results) {
+            // 简单的搜索逻辑
+            const recipes = [
+                { name: '西红柿炒蛋', desc: '经典家常菜，简单易做' },
+                { name: '红烧肉', desc: '香甜软糯，老少皆宜' },
+                { name: '宫保鸡丁', desc: '川菜经典，酸甜微辣' },
+                { name: '麻婆豆腐', desc: '川菜代表，麻辣鲜香' },
+                { name: '糖醋里脊', desc: '酸甜可口，老少皆宜' },
+                { name: '青椒肉丝', desc: '家常小炒，营养丰富' }
+            ];
+            
+            const filtered = recipes.filter(recipe => 
+                recipe.name.includes(query) || recipe.desc.includes(query)
+            );
+            
+            if (filtered.length === 0) {
+                results.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">没有找到相关菜谱</div>';
+            } else {
+                results.innerHTML = filtered.map(recipe => 
+                    `<div class="recipe-item" onclick="showRecipe('${recipe.name}')">
+                        <strong>${recipe.name}</strong><br>
+                        <small>${recipe.desc}</small>
+                    </div>`
+                ).join('');
+            }
+        }
+        
+        async function showRecipe(recipeName, useAI = false) {
+            if (useAI && vCook.aiConfig.apiKey) {
+                try {
+                    vCook.updateResponse('🤖 正在为您查找详细菜谱...');
+                    const aiRecipe = await vCook.getRecipeDetailsWithAI(recipeName);
+                    vCook.updateResponse(`📖 ${recipeName}：\n\n${aiRecipe}`);
+                    vCook.speak(`${recipeName}的详细做法已为您显示`);
+                } catch (error) {
+                    console.error('AI菜谱详情获取失败:', error);
+                    // 降级到基础菜谱
+                    showBasicRecipe(recipeName);
+                }
+            } else {
+                showBasicRecipe(recipeName);
+            }
+        }
+        
+        function showBasicRecipe(recipeName) {
+            const recipes = {
+                '西红柿炒蛋': '西红柿炒蛋做法：1.鸡蛋打散加盐，热油炒熟盛起 2.西红柿切块炒出汁水 3.倒入鸡蛋翻炒，调味即可',
+                '红烧肉': '红烧肉做法：1.五花肉切块焯水 2.炒糖色至焦糖色 3.下肉块炒匀 4.加调料和水，小火炖1小时 5.大火收汁',
+                '宫保鸡丁': '宫保鸡丁做法：1.鸡胸肉切丁腌制 2.花生米炸熟 3.爆炒鸡丁至变色 4.下干辣椒花椒爆香 5.调味炒匀即可',
+                '麻婆豆腐': '麻婆豆腐做法：1.豆腐切块焯水 2.炒肉末至酥香 3.下豆瓣酱炒红油 4.加豆腐和调料烧制 5.勾芡撒花椒面',
+                '糖醋里脊': '糖醋里脊做法：1.里脊肉切条腌制 2.裹淀粉炸至金黄 3.调糖醋汁 4.炒糖醋汁至浓稠 5.倒入里脊炒匀',
+                '青椒肉丝': '青椒肉丝做法：1.肉丝腌制 2.青椒切丝 3.热油炒肉丝至变色 4.下青椒丝炒断生 5.调味炒匀即可'
+            };
+            
+            const recipe = recipes[recipeName] || '抱歉，暂时没有这道菜的详细做法。';
+            vCook.updateResponse(`📖 ${recipeName}：${recipe}`);
+            vCook.speak(`${recipeName}的做法已为您显示`);
+        }
+        
+        function pauseTimer() {
+            vCook.pauseTimer();
+        }
+        
+        function resetTimer() {
+            vCook.resetTimer();
+        }
+        
+        function toggleAIConfig() {
+            const panel = document.getElementById('aiConfigPanel');
+            const form = document.getElementById('aiConfigForm');
+            const isVisible = panel.style.display === 'block';
+            
+            panel.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                // 加载当前配置
+                loadAIConfigToForm();
+                updateAIStatus();
+            }
+        }
+        
+        function loadAIConfigToForm() {
+            document.getElementById('aiProvider').value = vCook.aiConfig.provider;
+            document.getElementById('aiApiKey').value = vCook.aiConfig.apiKey;
+            document.getElementById('aiBaseUrl').value = vCook.aiConfig.baseUrl;
+            document.getElementById('aiModel').value = vCook.aiConfig.model;
+        }
+        
+        function saveAIConfig() {
+            const provider = document.getElementById('aiProvider').value;
+            const apiKey = document.getElementById('aiApiKey').value;
+            const baseUrl = document.getElementById('aiBaseUrl').value;
+            const model = document.getElementById('aiModel').value;
+            
+            // 根据提供商设置默认值
+            let finalBaseUrl = baseUrl;
+            let finalModel = model;
+            
+            if (!baseUrl) {
+                switch (provider) {
+                    case 'openai':
+                        finalBaseUrl = 'https://api.openai.com/v1';
+                        break;
+                    case 'claude':
+                        finalBaseUrl = 'https://api.anthropic.com';
+                        break;
+                    case 'gemini':
+                        finalBaseUrl = 'https://generativelanguage.googleapis.com/v1';
+                        break;
+                    case 'local':
+                        finalBaseUrl = 'http://localhost:11434/v1';
+                        break;
+                }
+            }
+            
+            if (!model) {
+                switch (provider) {
+                    case 'openai':
+                        finalModel = 'gpt-3.5-turbo';
+                        break;
+                    case 'claude':
+                        finalModel = 'claude-3-haiku-20240307';
+                        break;
+                    case 'gemini':
+                        finalModel = 'gemini-pro';
+                        break;
+                    case 'local':
+                        finalModel = 'llama2';
+                        break;
+                }
+            }
+            
+            vCook.aiConfig = {
+                provider: provider,
+                apiKey: apiKey,
+                baseUrl: finalBaseUrl,
+                model: finalModel
+            };
+            
+            localStorage.setItem('vcook-ai-config', JSON.stringify(vCook.aiConfig));
+            updateAIStatus();
+            
+            vCook.updateResponse('✅ AI配置已保存！现在可以使用智能菜谱推荐和语音理解功能。');
+            vCook.speak('AI配置已保存');
+        }
+        
+        async function testAIConnection() {
+            if (!vCook.aiConfig.apiKey) {
+                alert('请先输入API密钥');
+                return;
+            }
+            
+            try {
+                vCook.updateResponse('🔄 正在测试AI连接...');
+                const testResponse = await vCook.callAI('你好，请简单回复确认连接正常');
+                vCook.updateResponse('✅ AI连接测试成功！\n\n' + testResponse);
+                vCook.speak('AI连接测试成功');
+                updateAIStatus();
+            } catch (error) {
+                vCook.updateResponse('❌ AI连接测试失败：' + error.message);
+                vCook.speak('AI连接测试失败');
+                console.error('AI连接测试失败:', error);
+            }
+        }
+        
+        function clearAIConfig() {
+            if (confirm('确定要清除AI配置吗？这将删除所有保存的设置。')) {
+                vCook.aiConfig = {
+                    provider: 'openai',
+                    apiKey: '',
+                    baseUrl: 'https://api.openai.com/v1',
+                    model: 'gpt-3.5-turbo'
+                };
+                localStorage.removeItem('vcook-ai-config');
+                loadAIConfigToForm();
+                updateAIStatus();
+                vCook.updateResponse('🗑️ AI配置已清除，已切换到基础功能模式。');
+                vCook.speak('AI配置已清除');
+            }
+        }
+        
+        function updateAIStatus() {
+            const statusElement = document.getElementById('aiStatus');
+            const formElement = document.getElementById('aiConfigForm');
+            
+            if (vCook.aiConfig.apiKey) {
+                statusElement.className = 'ai-status connected';
+                statusElement.innerHTML = `
+                    <span>🟢 AI已连接 (${vCook.aiConfig.provider})</span>
+                    <button class="btn btn-secondary" onclick="toggleConfigForm()">管理</button>
+                `;
+            } else {
+                statusElement.className = 'ai-status disconnected';
+                statusElement.innerHTML = `
+                    <span>🔴 AI未配置</span>
+                    <button class="btn btn-secondary" onclick="toggleConfigForm()">配置</button>
+                `;
+            }
+        }
+        
+        function toggleConfigForm() {
+            const form = document.getElementById('aiConfigForm');
+            const isVisible = form.style.display === 'block';
+            form.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                loadAIConfigToForm();
+            }
+        }
+        
+        // 页面加载时更新AI状态
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                updateAIStatus();
+                // 默认显示AI配置面板
+                document.getElementById('aiConfigPanel').style.display = 'block';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
